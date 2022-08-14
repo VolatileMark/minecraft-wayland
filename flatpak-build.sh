@@ -26,10 +26,9 @@ git clone https://github.com/KDE/extra-cmake-modules.git
 
 echo "Installing ECM..."
 cd extra-cmake-modules
+mkdir install
 mkdir build && cd build
-cmake .. -DCMAKE_INSTALL_PREFIX="$cwd/ecm"
-mkdir -p "$cwd/ecm"
-make && make install
+cmake .. -DCMAKE_INSTALL_PREFIX="../install" && make install
 
 echo "Downloading GLFW source..."
 cd "$cwd"
@@ -46,7 +45,7 @@ for patch in "$cwd/../00"*.patch; do patch -p1 < "$patch"; done
 echo "Building GLFW..."
 mkdir -p "$appdir/usr"
 mkdir build && cd build
-flatpak run --command=sh --devel $appid -c "ECM_DIR=\"$cwd/ecm/share/ECM\" cmake .. -DCMAKE_INSTALL_PREFIX=\"$appdir/usr\" -DCMAKE_INSTALL_LIBDIR=lib -DBUILD_SHARED_LIBS=ON -DGLFW_USE_WAYLAND=ON && make install"
+flatpak run --command=sh --devel $appid -c "ECM_DIR=\"$cwd/extra-cmake-modules/install/share/ECM\" cmake .. -DCMAKE_INSTALL_PREFIX=\"$appdir/usr\" -DCMAKE_INSTALL_LIBDIR=lib -DBUILD_SHARED_LIBS=ON -DGLFW_USE_WAYLAND=ON && make install"
 
 echo "Done!"
 cd $appdir
