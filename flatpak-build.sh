@@ -64,3 +64,4 @@ flatpak override --user --env=LD_LIBRARY_PATH="$appdir/usr/lib:$ldpath" $appid
 
 echo "Done!"
 cd $appdir
+rm -rf tmp
