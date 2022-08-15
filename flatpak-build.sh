@@ -15,8 +15,6 @@ if [ $? -ne 0 ]; then
     exit -1
 fi
 
-ldpath="$(flatpak override --show $appid | grep LD_LIBRARY_PATH | sed 's/LD_LIBRARY_PATH=//g'):$(flatpak override --user --show $appid | grep LD_LIBRARY_PATH | sed 's/LD_LIBRARY_PATH=//g')"
-
 echo "Preparing workspace..."
 cwd="$(pwd)"
 cd "$appdir"
@@ -34,7 +32,7 @@ mkdir install
 mkdir build && cd build
 cmake .. -DCMAKE_INSTALL_PREFIX="../install" && make install
 
-echo "Downloading libdecor source"
+echo "Downloading libdecor source..."
 cd "$cwd"
 git clone --depth 1 "https://gitlab.gnome.org/jadahl/libdecor.git" --branch 0.1.0
 
@@ -60,8 +58,8 @@ for patch in "$cwd/00"*.patch; do patch -p1 < "$patch"; done
 echo "Building GLFW..."
 mkdir build && cd build
 flatpak run --command=sh --devel $appid -c "ECM_DIR=\"$cwd/extra-cmake-modules/install/share/ECM\" PKG_CONFIG_PATH=\"$appdir/usr/lib/pkgconfig\" cmake .. -DCMAKE_INSTALL_PREFIX=\"$appdir/usr\" -DCMAKE_INSTALL_LIBDIR=lib -DBUILD_SHARED_LIBS=ON -DGLFW_BUILD_WAYLAND=ON -DGLFW_USE_LIBDECOR=ON && make install"
-flatpak override --user --env=LD_LIBRARY_PATH="$appdir/usr/lib:$ldpath" $appid
+flatpak override --user --env=LD_LIBRARY_PATH="$appdir/usr/lib" $appid
 
 echo "Done!"
-cd $appdir
+cd "$appdir"
 rm -rf tmp
